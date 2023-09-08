@@ -53,7 +53,7 @@ export class AuthService {
 
     return {
       userId: user.userId,
-      token: await this.jwtService.signAsync({ userId: user.userId }),
+      token: await this.jwtService.signAsync({ userId: user._id }),
     };
   }
 }
