@@ -15,7 +15,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateBookDto } from './dto/create-book.dto';
 import { JsonParseInterceptor } from './books.interceptor';
 import { createReadStream } from 'fs';
-import { Writable } from 'stream';
 import { Response } from 'express';
 
 @Controller('api/books/')
