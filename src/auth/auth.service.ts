@@ -5,9 +5,8 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Bcrypt } from 'src/utils/bcrypt';
-import { randomUUID } from 'crypto';
 import { AuthDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 
@@ -32,7 +31,6 @@ export class AuthService {
     try {
       const userCreated = new this.userModel({
         ...authDto,
-        userId: randomUUID(),
         password: await this._bcrypt.hashPassword(authDto.password),
       });
       return await userCreated.save();
@@ -41,7 +39,9 @@ export class AuthService {
     }
   }
 
-  async getUser(authDto: AuthDto): Promise<Record<string, string>> {
+  async getUser(
+    authDto: AuthDto,
+  ): Promise<{ userId: Types.ObjectId; token: string }> {
     const user = await this.userModel.findOne({
       email: authDto.email,
     });
@@ -52,7 +52,7 @@ export class AuthService {
       throw new UnauthorizedException('Mot de passe incorrect.');
 
     return {
-      userId: user.userId,
+      userId: user._id,
       token: await this.jwtService.signAsync({ userId: user._id }),
     };
   }

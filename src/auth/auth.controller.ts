@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
+import { Types } from 'mongoose';
 
 @Controller('/api/auth/')
 export class AuthController {
@@ -13,7 +14,9 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() authDto: AuthDto): Promise<Record<string, string>> {
+  async login(
+    @Body() authDto: AuthDto,
+  ): Promise<Promise<{ userId: Types.ObjectId; token: string }>> {
     const user = await this.authService.getUser(authDto);
     return user;
   }
