@@ -15,7 +15,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateBookDto } from './dto/create-book.dto';
 import { JsonParseInterceptor } from './books.interceptor';
 import { createReadStream } from 'fs';
-import { join } from 'path';
+import { Writable } from 'stream';
+import { Response } from 'express';
 
 @Controller('api/books/')
 export class BooksController {
@@ -43,7 +44,7 @@ export class BooksController {
   }
 
   @Get('cover/:id')
-  async getBookCover(@Param('id') id: string, @Res() res) {
+  async getBookCover(@Param('id') id: string, @Res() res: Response) {
     const file = createReadStream(`./uploads/${id}`);
     return file.pipe(res);
   }
