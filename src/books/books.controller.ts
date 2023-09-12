@@ -34,12 +34,16 @@ export class BooksController {
 
   @Get()
   async findAll() {
-    return this.booksService.getAllBooks();
+    return await this.booksService.getAllBooks();
+  }
+  @Get('bestrating')
+  async findBestBook() {
+    return await this.booksService.getBestBooks();
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.booksService.getOneBook(id);
+    return await this.booksService.getOneBook(id);
   }
 
   @Get('cover/:id')

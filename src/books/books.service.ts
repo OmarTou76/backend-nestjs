@@ -25,6 +25,14 @@ export class BooksService {
     }).save();
   }
 
+  async getBestBooks() {
+    return await this.booksModel
+      .find()
+      .sort({ averageRating: -1 })
+      .limit(3)
+      .exec();
+  }
+
   async getAllBooks() {
     return await this.booksModel.find();
   }
