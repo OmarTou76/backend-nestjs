@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Res,
   UploadedFile,
   UseGuards,
@@ -16,6 +17,7 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { JsonParseInterceptor } from './books.interceptor';
 import { createReadStream } from 'fs';
 import { Response } from 'express';
+import { ObjectId } from 'mongoose';
 
 @Controller('api/books/')
 export class BooksController {
@@ -42,8 +44,23 @@ export class BooksController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: ObjectId) {
     return await this.booksService.getOneBook(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('image'), new JsonParseInterceptor())
+  @Put(':id')
+  async updateBook(
+    @Param('id') id: ObjectId,
+    @Body() body: { book: CreateBookDto } | CreateBookDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return await this.booksService.updateBook(
+      id,
+      'book' in body ? body.book : body,
+      image,
+    );
   }
 
   @Get('cover/:id')

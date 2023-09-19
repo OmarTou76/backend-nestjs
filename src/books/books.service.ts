@@ -1,10 +1,11 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Books } from './schemas/books.schema';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { CreateBookDto } from './dto/create-book.dto';
 import { randomUUID } from 'crypto';
-import { writeFile } from 'fs/promises';
+import { unlink, writeFile } from 'fs/promises';
+
 @Injectable()
 export class BooksService {
   private readonly MIMETYPE = {
@@ -15,6 +16,33 @@ export class BooksService {
 
   private readonly IMAGE_URL = 'http://localhost:4000/api/books/cover/';
   constructor(@InjectModel(Books.name) private booksModel: Model<Books>) {}
+
+  async deleteUpload(id: ObjectId) {
+    const book = await this.getOneBook(id);
+    const filename = book.imageUrl.split(this.IMAGE_URL)[1];
+    const path = `./uploads/${filename}`;
+    await unlink(path);
+  }
+
+  async updateBook(
+    id: ObjectId,
+    body: CreateBookDto,
+    image: Express.Multer.File,
+  ) {
+    if (!image)
+      return await this.booksModel.findOneAndUpdate({ _id: id }, { ...body });
+
+    const filename = await this.saveImage(image);
+    await this.deleteUpload(id);
+
+    return this.booksModel.findOneAndUpdate(
+      { _id: id },
+      {
+        ...body,
+        imageUrl: this.IMAGE_URL + filename,
+      },
+    );
+  }
 
   async saveBook(body: CreateBookDto, image: Express.Multer.File) {
     const filename = await this.saveImage(image);
@@ -37,7 +65,7 @@ export class BooksService {
     return await this.booksModel.find();
   }
 
-  async getOneBook(id: string) {
+  async getOneBook(id: ObjectId) {
     return await this.booksModel.findById(id);
   }
 
