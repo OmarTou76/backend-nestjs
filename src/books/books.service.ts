@@ -19,9 +19,15 @@ export class BooksService {
 
   async deleteUpload(id: ObjectId) {
     const book = await this.getOneBook(id);
+    if (!book) throw new ConflictException("Ce livre n'existe pas/plus.");
     const filename = book.imageUrl.split(this.IMAGE_URL)[1];
     const path = `./uploads/${filename}`;
     await unlink(path);
+  }
+
+  async deleteBook(id: ObjectId) {
+    await this.deleteUpload(id);
+    return await this.booksModel.findByIdAndRemove(id);
   }
 
   async updateBook(

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -61,6 +62,12 @@ export class BooksController {
       'book' in body ? body.book : body,
       image,
     );
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete(':id')
+  async removeBook(@Param('id') id: ObjectId) {
+    return await this.booksService.deleteBook(id);
   }
 
   @Get('cover/:id')
