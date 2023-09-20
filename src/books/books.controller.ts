@@ -19,6 +19,7 @@ import { JsonParseInterceptor } from './books.interceptor';
 import { createReadStream } from 'fs';
 import { Response } from 'express';
 import { ObjectId } from 'mongoose';
+import { AppendRatingDto } from './dto/append-rating.dto';
 
 @Controller('api/books/')
 export class BooksController {
@@ -62,6 +63,12 @@ export class BooksController {
       'book' in body ? body.book : body,
       image,
     );
+  }
+
+  @UseGuards(AuthGuard)
+  @Post(':id/rating')
+  async postRating(@Param('id') id: ObjectId, @Body() body: AppendRatingDto) {
+    return await this.booksService.appendRating(id, body);
   }
 
   @UseGuards(AuthGuard)

@@ -5,6 +5,7 @@ import { Model, ObjectId } from 'mongoose';
 import { CreateBookDto } from './dto/create-book.dto';
 import { randomUUID } from 'crypto';
 import { unlink, writeFile } from 'fs/promises';
+import { AppendRatingDto } from './dto/append-rating.dto';
 
 @Injectable()
 export class BooksService {
@@ -23,6 +24,18 @@ export class BooksService {
     const filename = book.imageUrl.split(this.IMAGE_URL)[1];
     const path = `./uploads/${filename}`;
     await unlink(path);
+  }
+
+  private getAverage(ratings: Books['ratings']) {
+    const sum = ratings.reduce((acc, curr) => (acc += curr.grade), 0);
+    return sum / ratings.length;
+  }
+
+  async appendRating(id: ObjectId, rating: AppendRatingDto) {
+    const book = await this.booksModel.findById(id);
+    book.ratings.push({ ...rating, grade: rating.rating });
+    book.averageRating = this.getAverage(book.ratings);
+    return await book.save();
   }
 
   async deleteBook(id: ObjectId) {

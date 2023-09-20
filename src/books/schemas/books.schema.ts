@@ -27,7 +27,11 @@ export class Books {
   @Prop({
     type: [
       {
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          unique: true,
+        },
         grade: { type: Number },
       },
     ],
