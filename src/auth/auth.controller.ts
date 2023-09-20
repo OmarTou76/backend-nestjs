@@ -9,6 +9,7 @@ export class AuthController {
 
   @Post('signup')
   async signUp(@Body() authDto: AuthDto): Promise<{ message: string }> {
+    console.log(authDto);
     await this.authService.create(authDto);
     return { message: 'Utilisateur crée !' };
   }

@@ -6,6 +6,8 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { randomUUID } from 'crypto';
 import { unlink, writeFile } from 'fs/promises';
 import { AppendRatingDto } from './dto/append-rating.dto';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class BooksService {

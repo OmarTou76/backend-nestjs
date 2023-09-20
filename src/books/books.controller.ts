@@ -20,6 +20,7 @@ import { createReadStream } from 'fs';
 import { Response } from 'express';
 import { ObjectId } from 'mongoose';
 import { AppendRatingDto } from './dto/append-rating.dto';
+import { validate } from 'class-validator';
 
 @Controller('api/books/')
 export class BooksController {
@@ -58,11 +59,8 @@ export class BooksController {
     @Body() body: { book: CreateBookDto } | CreateBookDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    return await this.booksService.updateBook(
-      id,
-      'book' in body ? body.book : body,
-      image,
-    );
+    const book = 'book' in body ? body.book : body;
+    return await this.booksService.updateBook(id, book, image);
   }
 
   @UseGuards(AuthGuard)

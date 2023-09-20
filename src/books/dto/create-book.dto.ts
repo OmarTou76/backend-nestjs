@@ -25,7 +25,6 @@ export class CreateBookDto {
   @IsNumber()
   grade: number;
 
-  //@IsNotEmpty()
   @IsNumber()
   averageRating: number;
 }

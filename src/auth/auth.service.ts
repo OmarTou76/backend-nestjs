@@ -35,6 +35,7 @@ export class AuthService {
       });
       return await userCreated.save();
     } catch (error) {
+      console.log(error);
       throw new Error("Erreur lors de la création de l 'utilisateur.");
     }
   }
